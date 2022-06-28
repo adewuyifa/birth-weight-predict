@@ -186,7 +186,7 @@ app.layout = html.Div([
         dbc.Row([
             dbc.Col([
                 html.H4("Information before use"),
-                html.P("This app is based on a Logistic regression model the predicts the birth weight of "
+                html.P("This app is based on a Logistic regression model that predicts the birth weight of "
                        "pregnant women based on the answers to eight questions on "
                        "their maternal behaviour. The app returns the predicted outcome as "
                        "low birth weight (birth weight <2500g) or normal birth weight "
