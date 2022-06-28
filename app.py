@@ -7,10 +7,11 @@ from dash.exceptions import PreventUpdate
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
-from sklearn.utils.validation import check_is_fitted
+
 from category_encoders import OneHotEncoder
 
-#Import
+
+# Import
 def wrangle(filepath):
     """Read maternity data file into ``DataFrame``.
     Parameters
@@ -37,26 +38,26 @@ def wrangle(filepath):
 df = wrangle("data/low_birth_weight.xls")
 
 # Split
-target="Birth_weight"
+target = "Birth_weight"
 X = df.drop(columns=target)
 y = df[target]
 X_train, X_test, y_train, y_test = train_test_split(
-X, y, test_size=0.2, random_state=42
+    X, y, test_size=0.2, random_state=42
 )
 
-#Baseline
+# Baseline
 acc_baseline = y_train.value_counts(normalize=True).max()
 
-#Iterate
-#Build model
+# Iterate
+# Build model
 model = make_pipeline(
 OneHotEncoder(use_cat_names=True),
 LogisticRegression(max_iter=1000)
 )
-#Fit model to training data
+# Fit model to training data
 model.fit(X_train, y_train)
 
-#App dev
+# App dev
 navbar = dbc.NavbarSimple(
     brand="Birth Weight Predictor",
     brand_href="#",
@@ -185,9 +186,9 @@ app.layout = html.Div([
         dbc.Row([
             dbc.Col([
                 html.H4("Information before use"),
-                html.P("The Logistic regression model predicts the birth weight of "
-                       "pregnant women based on the answers to the eight questions on "
-                       "their maternal behaviour, and returns the predicted outcome as "
+                html.P("This app is based on a Logistic regression model the predicts the birth weight of "
+                       "pregnant women based on the answers to eight questions on "
+                       "their maternal behaviour. The app returns the predicted outcome as "
                        "low birth weight (birth weight <2500g) or normal birth weight "
                        "(birth weight >2500g).", style={"textAlign":"justify"}),
                 html.P("All questions must be answered before clicking on the submit "
@@ -208,17 +209,18 @@ app.layout = html.Div([
     ]),
 ])
 
+
 @app.callback(
-Output("result-text", "children"),
-Input("submit-val", "n_clicks"),
-State("age", "value"),
-State("weight", "value"),
-State("race-id", "value"),
-State("smoke-id", "value"),
-State("prem-id", "value"),
-State("hyper-id", "value"),
-State("uterine-id", "value"),
-State("physician-visit", "value")
+    Output("result-text", "children"),
+    Input("submit-val", "n_clicks"),
+    State("age", "value"),
+    State("weight", "value"),
+    State("race-id", "value"),
+    State("smoke-id", "value"),
+    State("prem-id", "value"),
+    State("hyper-id", "value"),
+    State("uterine-id", "value"),
+    State("physician-visit", "value")
 )
 def make_prediction(n_clicks, Age, Mother_weight, Race,Smoking_status, History_of_premature_labor,
                     History_of_Hypertension, Presence_of_uterine_irritability,Physician_visits):
@@ -239,24 +241,24 @@ def make_prediction(n_clicks, Age, Mother_weight, Race,Smoking_status, History_o
     if Physician_visits is None:
         raise PreventUpdate
     data = {
-    "Age": Age,
-    "Mother_weight": Mother_weight,
-    "Race": Race,
-    "Smoking_status" : Smoking_status,
-    "History_of_premature_labor":History_of_premature_labor,
-    "History_of_Hypertension":History_of_Hypertension,
-    "Presence_of_uterine_irritability": Presence_of_uterine_irritability,
-    "Physician_visits": Physician_visits
+        "Age": Age,
+        "Mother_weight": Mother_weight,
+        "Race": Race,
+        "Smoking_status" : Smoking_status,
+        "History_of_premature_labor":History_of_premature_labor,
+        "History_of_Hypertension":History_of_Hypertension,
+        "Presence_of_uterine_irritability": Presence_of_uterine_irritability,
+        "Physician_visits": Physician_visits
     }
     df = pd.DataFrame(data, index=[0])
     predicted_value = {
-    0:"Normal birth weight",
-    1:"Low birth weight"
+        0:"Normal birth weight",
+        1:"Low birth weight"
     }
     prediction = model.predict(df)
     my_dict = {
-    0:"Normal Birth Weight (i.e birth weight  >= 2500 g)",
-    1:"Low Birth Weight (i.e birth weight  < 2500g)"
+        0:"Normal Birth Weight (i.e birth weight  >= 2500 g)",
+        1:"Low Birth Weight (i.e birth weight  < 2500g)"
     }
     y_train_pred_proba = model.predict_proba(X_train)
     maxElement = np.amax(y_train_pred_proba)
@@ -264,4 +266,4 @@ def make_prediction(n_clicks, Age, Mother_weight, Race,Smoking_status, History_o
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
